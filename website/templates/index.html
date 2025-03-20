@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not logged_in: %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis titles">Welcome to</h1>
+    <h1 class="display-5 fw-bold text-body-emphasis titles">MovieBook</h1>
+    <div class="col-lg-6 mx-auto">
+        <div class="d-grid gap-2">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm mx-auto fixed-btn">Login</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-sm mx-auto fixed-btn">Register</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+      <h1 style="text-align: center;">Trending Movies</h1>
+    <!-- Prima secțiune de carduri -->
+    <div class="carousel-item active">
+      <div class="container">
+        <div class="row justify-content-center">
+          <!-- Carduri (5 carduri) -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <!-- Card 1 -->
+              <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A doua secțiune de carduri -->
+    <div class="carousel-item">
+      <div class="container">
+        <div class="row justify-content-center">
+          <!-- Carduri (5 carduri) -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">3</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+            <div class="card">
+              <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
+                <h2 class="large">2</h2>
+              </div>
+              <div class="back">
+                <div>
+                  <div class="title">Inception <span class="release_date">(2010)</span></div>
+                  <div class="rating">
+                    <label>8.8</label>
+                    <i class="fas fa-star star"></i>
+                  </div>
+                  <p class="review">"A mind-bending thriller with stunning visuals."</p>
+                  <p class="overview">A thief who enters the dreams of others to steal their secrets gets a final mission that could give him his life back.</p>
+                  <a href="#" class="button">Update</a>
+                  <a href="#" class="button delete-button">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigare carusel -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+{% endblock %}
