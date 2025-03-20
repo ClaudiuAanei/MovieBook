@@ -26,6 +26,7 @@ def register():
             flash("Password must have minimum 8 characters.")
             return redirect(url_for('auth.register'))
         elif not special_char(form.password1.data):
+            flash("Password must have one special character.")
             return redirect(url_for('auth.register'))
         #hasing and salting a password
         password = generate_password_hash(password= passw,
@@ -41,7 +42,7 @@ def register():
 
         login_user(new_user)
 
-        return render_template("index.html", logged_in= current_user.is_authenticated)
+        return redirect(url_for('views.home', logged_in= current_user.is_authenticated))
     return render_template("register.html",form= form ,logged_in= current_user.is_authenticated)
 
 @auth.route('/login', methods= ["GET", "POST"])
@@ -75,7 +76,6 @@ def logout():
 def special_char(password):
     special_chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '[', ']', '^', '_', ':', ';', '<', '=', '>', '?', '{', '|', '}']
     for letter in password:
-        if not letter in special_chars:
-            flash("Password mush have a special charcater.")
-            return False
-    return True
+        if letter in special_chars:
+            return True
+    return False
