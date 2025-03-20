@@ -1,19 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if not logged_in: %}
-<div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold text-body-emphasis titles">Welcome to</h1>
-    <h1 class="display-5 fw-bold text-body-emphasis titles">MovieBook</h1>
-    <div class="col-lg-6 mx-auto">
-        <div class="d-grid gap-2">
-            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm mx-auto fixed-btn">Login</a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-sm mx-auto fixed-btn">Register</a>
-        </div>
-    </div>
-</div>
-{% endif %}
-
 <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
       <h1 style="text-align: center;">Trending Movies</h1>
@@ -22,7 +9,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <!-- Carduri (5 carduri) -->
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <!-- Card 1 -->
               <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
@@ -43,7 +30,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -63,7 +50,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -83,7 +70,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -103,7 +90,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -132,7 +119,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <!-- Carduri (5 carduri) -->
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">3</h2>
@@ -152,7 +139,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -172,7 +159,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -192,7 +179,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -212,7 +199,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-2 mb-4">
+          <div class="col-12 col-sm-2 col-md-2 col-lg-2 mb-4">
             <div class="card">
               <div class="front" style="background-image: url('https://via.placeholder.com/300x450');">
                 <h2 class="large">2</h2>
@@ -247,5 +234,17 @@
     <span class="visually-hidden">Next</span>
   </button>
 </div>
+
+{% if not logged_in: %}
+<div class="px-4 py-2 my-2 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis titles">Welcome to MovieBook</h1>
+    <div class="col-lg-6 mx-auto">
+<div class="d-flex justify-content-center">
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-m fixed-btn">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-m fixed-btn">Register</a>
+</div>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}

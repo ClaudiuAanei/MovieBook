@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from os import path
 from flask_login import LoginManager
+from flask_bootstrap import Bootstrap5
 
 db = SQLAlchemy()
 DB_NAME = "database_moviebook.db"
@@ -12,6 +12,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'secrete-key-here-later'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
+    Bootstrap5(app)
 
     from .views import views
     from .auth import auth
