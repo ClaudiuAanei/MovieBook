@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, current_user
 from . import db
-from .models import User
+from .models import User, RandomMovie
 from .forms import RegisterForm, LoginForm
 
 auth = Blueprint("auth", __name__)
@@ -41,6 +41,14 @@ def register():
         db.session.commit()
 
         login_user(new_user)
+        first_movie = RandomMovie(title= "Let us give you a movie",
+                                  overview= "We are glad to help you watch a movie today.",
+                                  release_date= "2025",
+                                  poster_url= "",
+                                  rating = 10,
+                                  movie_owner= current_user.id)
+        db.session.add(first_movie)
+        db.session.commit()
 
         return redirect(url_for('views.home', logged_in= current_user.is_authenticated))
     return render_template("register.html",form= form ,logged_in= current_user.is_authenticated)

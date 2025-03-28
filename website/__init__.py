@@ -23,6 +23,8 @@ def create_app():
 
     from .models import User
     from .models import PopularMovies
+    from .models import RandomMovie
+    from .models import PopularSeries
 
     create_database(app)
 
