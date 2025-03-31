@@ -94,11 +94,6 @@ a {
     text-align: left;
 }
 
-p {
-    color: #ee6f57;
-    text-align: center;
-}
-
 .box {
 	position: relative;
 	top: 30%;
@@ -307,11 +302,12 @@ h2 {
     position: relative;
     display: inline-block;
     width: 150px;
+    perspective: 1000px;
 }
 
 .header-title {
     position: relative;
-    left: 65%;
+    left: 60%;
     transform: translateX(-50%);
     text-align: center;
     font-size: 1.5rem;
@@ -327,8 +323,11 @@ h2 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     overflow: hidden;
-    position: relative;
+    position: relative; /* Asigură-te că fiecare card are position: relative */
     float: none;
+    transition: transform 0.3s ease-in-out, z-index 0s ease; /* Tranșitie pentru z-index */
+    transform-style: preserve-3d; /* Asigură-te că cardul rămâne 3D */
+    z-index: 1; /* Cardurile vor avea un z-index de bază */
 }
 
 .custom-card .front, .custom-card .back {
@@ -356,6 +355,11 @@ h2 {
     transform: rotateY(180deg);
     flex-direction: column;
     padding: 10px;
+}
+
+.custom-card:hover {
+    transform: scale(1.1); /* Mărește cardul */
+    z-index: 9999; /* Cardul iese în față */
 }
 
 .custom-card:hover .front {

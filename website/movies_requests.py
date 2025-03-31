@@ -1,29 +1,32 @@
 import random
-
-from website import db, create_app
 import requests
-from flask import current_app
 from website.models import PopularMovies, PopularSeries
-import json
+from website import db
+
+
 MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
 
-app = create_app()
+DB = "instance/database_moviebook.db"
+
+session = db.session
 
 def update_popular_movies():
     popular_movies = popular_movies_request()
     if len(popular_movies) >= 10:
-        with app.app_context():
-            db.session.execute(db.delete(PopularMovies))
-            db.session.commit()
-            for movie in popular_movies:
-                if movie['poster_path']:
-                    new_movie = PopularMovies(title=movie['title'],
-                                          overview=movie['overview'],
-                                          poster=MOVIE_DB_IMAGE_URL + movie['poster_path'],
-                                          popularity = movie['popularity'],
-                                          relase_date=movie['release_date'].split('-')[0])
-                    db.session.add(new_movie)
-                    db.session.commit()
+        session.query(PopularMovies).delete(synchronize_session=False)
+        session.commit()
+
+        new_movies = []
+        for movie in popular_movies:
+            if movie['poster_path']:
+                new_movie = PopularMovies(title=movie['title'],
+                                      overview=movie['overview'],
+                                      poster=MOVIE_DB_IMAGE_URL + movie['poster_path'],
+                                      popularity = movie['popularity'],
+                                      relase_date=movie['release_date'].split('-')[0])
+                new_movies.append(new_movie)
+        session.bulk_save_objects(new_movies)
+        session.commit()
 
 
 def popular_movies_request():
@@ -46,18 +49,20 @@ def popular_movies_request():
 def update_popular_series():
     popular_series = popular_series_request()
     if len(popular_series) >= 10:
-        with app.app_context():
-            db.session.execute(db.delete(PopularSeries))
-            db.session.commit()
-            for serie in popular_series[:10]:
-                if serie['poster_path']:
-                    new_serie = PopularSeries(title=serie['name'],
-                                          overview=serie['overview'],
-                                          poster=MOVIE_DB_IMAGE_URL + serie['poster_path'],
-                                          popularity = serie['popularity'],
-                                          relase_date=serie['first_air_date'].split('-')[0])
-                    db.session.add(new_serie)
-                    db.session.commit()
+        session.query(PopularSeries).delete(synchronize_session=False)
+        session.commit()
+
+        new_series = []
+        for serie in popular_series[:10]:
+            if serie['poster_path']:
+                new_serie = PopularSeries(title=serie['name'],
+                                      overview=serie['overview'],
+                                      poster=MOVIE_DB_IMAGE_URL + serie['poster_path'],
+                                      popularity = serie['popularity'],
+                                      relase_date=serie['first_air_date'].split('-')[0])
+                new_series.append(new_serie)
+        session.bulk_save_objects(new_series)
+        session.commit()
 
 def popular_series_request():
     url = "https://api.themoviedb.org/3/trending/tv/day?language=en-US"
@@ -85,36 +90,37 @@ def get_random_movie(year= None, genre= None):
     }
     params = {
         "page": 1,
-        "with_original_language": "en"
+        "with_original_language": "en",
+        "sort_by": "popularity.desc",
     }
 
     if year:
-        params['year'] = year
-        print(params)
+        params['primary_release_year'] = year
 
     if genre:
         params['with_genres'] = genre
-        print(params)
 
     random_page = random.randint(1, 10)
     params['page'] = random_page
-    print(params)
     response = requests.get(url, headers= headers ,params= params)
 
     if response.status_code != 200:
         return None
 
     movies = response.json()['results']
-    print(json.dumps(movies, indent= 4))
-    random_movie = random.choice(movies)
+    if movies:
+        random_movie = random.choice(movies)
 
-    return {
-        "title": random_movie["title"],
-        "overview": random_movie["overview"],
-        "release_date": random_movie["release_date"],
-        "rating": random_movie["vote_average"],
-        "poster_url": f"{MOVIE_DB_IMAGE_URL}{random_movie['poster_path']}"
-    }
+        return {
+            "title": random_movie["title"],
+            "overview": random_movie["overview"],
+            "release_date": random_movie["release_date"],
+            "rating": random_movie["vote_average"],
+            "poster_url": f"{MOVIE_DB_IMAGE_URL}{random_movie['poster_path']}"
+        }
+    else:
+        return None
+
 
 # series = popular_series_request()
 # print(json.dumps(series, indent= 4))

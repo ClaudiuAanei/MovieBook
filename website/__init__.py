@@ -21,10 +21,7 @@ def create_app():
     app.register_blueprint(views, url_prefix= '/')
     app.register_blueprint(auth, url_prefix= '/')
 
-    from .models import User
-    from .models import PopularMovies
-    from .models import RandomMovie
-    from .models import PopularSeries
+    from .models import User, PopularMovies, RandomMovie, PopularSeries, SaveMovie
 
     create_database(app)
 

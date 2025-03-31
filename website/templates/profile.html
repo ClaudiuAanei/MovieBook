@@ -3,21 +3,21 @@
 
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-3 col-lg-2 p-3">
+            <div class="col-md-3 col-lg-2 p-4">
+                <h1 class="header-title pb-3 text-center">Movie for {{ user.name }}</h1>
                 <div class="card-container">
-                    <h1 class="header-title">Our choose for {{ user.name }}</h1>
                     <div class="custom-card">
                         <div class="front" style="background-image: url('{{ movie.poster_url }}');">
-                            <h2 class="large">1</h2>
                         </div>
                         <div class="back">
                             <div>
                                 <div class="title-small-card">{{ movie.title }}</div>
-                                <span class="release_year">{{ movie.release_date }}</span>
+                                <span class="release_year">{{ movie.relase_date }}</span>
                                 <div class="rating">
                                     <label>{{ movie.rating }}</label>
                                     <i class="fas fa-star star"></i>
                                 </div>
+                                <a href="{{ url_for ('views.save_movie', id = movie.id, save_from= 'profile') }}" class="btn btn-outline-warning card-button">Salveaza</a>
                             </div>
                         </div>
                     </div>
@@ -42,7 +42,35 @@
                     {% endif %}
                 </form>
             </div>
-            <div class="col-md-6 col-lg-8 p-3 text-white text-center">Coloana 3</div>
+            <div class="col-md-6 col-lg-8 p-3 text-white text-start">
+                <h1 style="font-family: Times New Roman, sans-serif;"> Filmele Mele </h1>
+                {% if saved_movies %}
+                <div class="row row-cols-12 row-cols-md-12 row-cols-lg-12 g-3 py-2">
+                    {% for movie in saved_movies %}
+                    <div class="card-container">
+                        <div class="custom-card">
+                            <div class="front" style="background-image: url('{{ movie.poster_url }}');">
+                            </div>
+                            <div class="back">
+                                <div>
+                                    <div class="title-small-card">{{ movie.title }}</div>
+                                    <span class="release_year">{{ movie.relase_date }}</span>
+                                    <div class="rating">
+                                        <label>{{ movie.rating }}</label>
+                                        <i class="fas fa-star star"></i>
+                                    </div>
+                                    <a href="{{ movie.details_url }}" class="btn btn-outline-warning card-button">Vezi detalii</a>
+                                    <a href="{{ url_for('views.delete', id= movie.id) }}" class="btn btn-outline-danger card-button">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nu ai salvat niciun film.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 

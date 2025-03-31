@@ -24,7 +24,7 @@
                     <i class="fas fa-star star"></i>
                   </div>
                   <p class="overview">{{ movie.overview[:100] }}...</p>
-                  <a href="#" class="button">Save Movie</a>
+                  <a href="{{ url_for ('views.save_movie', id = movie.id, save_from= 'home')}}" class="button">Save Movie</a>
                 </div>
               </div>
             </div>
@@ -54,7 +54,7 @@
                     <i class="fas fa-star star"></i>
                   </div>
                   <p class="overview">{{ movie.overview[:100] }}...</p>
-                  <a href="#" class="button">Save Movie</a>
+                  <a href="{{ url_for ('views.save_movie', id = movie.id, save_from= 'home') }}" class="button">Save Movie</a>
                 </div>
               </div>
             </div>

@@ -43,7 +43,7 @@ def register():
         login_user(new_user)
         first_movie = RandomMovie(title= "Let us give you a movie",
                                   overview= "We are glad to help you watch a movie today.",
-                                  release_date= "2025",
+                                  relase_date= "2025",
                                   poster_url= "",
                                   rating = 10,
                                   movie_owner= current_user.id)
