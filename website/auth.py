@@ -41,12 +41,14 @@ def register():
         db.session.commit()
 
         login_user(new_user)
-        first_movie = RandomMovie(title= "Let us give you a movie",
-                                  overview= "We are glad to help you watch a movie today.",
-                                  relase_date= "2025",
-                                  poster_url= "",
-                                  rating = 10,
-                                  movie_owner= current_user.id)
+        first_movie = RandomMovie(unique_id= 000000,
+                                title= "Let us give you a movie",
+                                overview= "We are glad to help you watch a movie today.",
+                                poster_url= "",
+                                rating = 10,
+                                trailer= "",
+                                release_date="0000",
+                                movie_owner= current_user.id)
         db.session.add(first_movie)
         db.session.commit()
 

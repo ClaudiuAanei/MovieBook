@@ -1,77 +1,106 @@
 {% extends 'base.html' %}{% from "bootstrap5/form.html" import render_form %}
 {% block content %}
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-3 col-lg-2 p-4">
-                <h1 class="header-title pb-3 text-center">Movie for {{ user.name }}</h1>
-                <div class="card-container">
-                    <div class="custom-card">
-                        <div class="front" style="background-image: url('{{ movie.poster_url }}');">
-                        </div>
-                        <div class="back">
-                            <div>
-                                <div class="title-small-card">{{ movie.title }}</div>
-                                <span class="release_year">{{ movie.relase_date }}</span>
-                                <div class="rating">
-                                    <label>{{ movie.rating }}</label>
-                                    <i class="fas fa-star star"></i>
-                                </div>
-                                <a href="{{ url_for ('views.save_movie', id = movie.id, save_from= 'profile') }}" class="btn btn-outline-warning card-button">Salveaza</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-lg-2 p-5 py-5 text-white text-start" style="margin-top: 10px;">
-                <form id="RandomMovieForm" method="POST">
-                    {{ form.hidden_tag() }}
-                    <div class="mb-3">
-                        <label>Year</label>
-                        {{ form.year(class="form-control", id="year", placeholder= Year) }}
-                    </div>
 
-                    <div class="mb-3">
-                        <label>Category</label>
-                        {{ form.category(class="form-control", id="category", placeholder= Category) }}
-                    </div>
-                    {% if logged_in %}
-                        {% if user.id == current_user.id %}
-                    {{ form.submit(class="btn btn-warning card-button") }}
-                        {% endif %}
-                    {% endif %}
-                </form>
-            </div>
-            <div class="col-md-6 col-lg-8 p-3 text-white text-start">
-                <h1 style="font-family: Times New Roman, sans-serif;"> Filmele Mele </h1>
-                {% if saved_movies %}
-                <div class="row row-cols-12 row-cols-md-12 row-cols-lg-12 g-3 py-2">
-                    {% for movie in saved_movies %}
-                    <div class="card-container">
-                        <div class="custom-card">
-                            <div class="front" style="background-image: url('{{ movie.poster_url }}');">
-                            </div>
-                            <div class="back">
-                                <div>
-                                    <div class="title-small-card">{{ movie.title }}</div>
-                                    <span class="release_year">{{ movie.relase_date }}</span>
-                                    <div class="rating">
-                                        <label>{{ movie.rating }}</label>
-                                        <i class="fas fa-star star"></i>
-                                    </div>
-                                    <a href="{{ movie.details_url }}" class="btn btn-outline-warning card-button">Vezi detalii</a>
-                                    <a href="{{ url_for('views.delete', id= movie.id) }}" class="btn btn-outline-danger card-button">Delete</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p>Nu ai salvat niciun film.</p>
-                {% endif %}
-            </div>
+<!-- CONTEXT: Container scrollabil -->
+<div class="scroll-container-wrapper">
+    {% if saved_movies %}
+    <button type="button" class="btn btn-outline-secondary scroll-left" style="outline: none; box-shadow: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M9.224 1.553a.5.5 0 0 1 .223.67L6.56 8l2.888 5.776a.5.5 0 1 1-.894.448l-3-6a.5.5 0 0 1 0-.448l3-6a.5.5 0 0 1 .67-.223"></path>
+        </svg>
+        <span class="visually-hidden">Button</span>
+    </button>
+  <div class="scroll-container">
+
+      {% for movie in saved_movies[::-1] %}
+        <div class="card-mylist position-relative">
+          <div class="rating-badge">
+            <i>{{ movie.rating }}</i>
+            <i class="fas fa-star"></i>
+          </div>
+          <img src="{{ movie.poster_url }}" alt="Poster Film">
+
+          <!-- Butoane: Delete & See Details -->
+          <a href="{{ url_for('views.see_details', title= movie.title) }}" class="btn btn-warning details-button">See details</a>
+          <a href="{{ url_for('views.delete', id= movie.id) }}" class="btn btn-danger delete-button">Delete</a>
+
+          <div class="release-date">
+            {{ movie.release_date }}
+          </div>
         </div>
+      {% endfor %}
+      {% else %}
+      <p>Nu ai salvat niciun film.</p>
+      {% endif %}
+  </div>
+    <button type="button" class="btn btn-outline-secondary scroll-right" style="margin-right: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671"></path>
+        </svg>
+    </button>
+</div>
+
+
+
+<div class="container-sm col-xl-10 col-xxl-8 py-3">
+  <div class="card-container">
+
+<div class="card-profile position-relative">
+  <div class="rating-badge">
+    <i>{{ movie.rating }}</i>
+    <i class="fas fa-star"></i>
+  </div>
+  <img src="{{ movie.poster_url }}" alt="Poster Film">
+
+  <!-- Butonul apare pe hover -->
+  <a href="{{ url_for('views.save_movie', save_from= 'profile', id= movie.id) }}" class="save-button btn btn-warning">Add to Mylist</a>
+
+  <div class="release-date">
+    {{ movie.release_date }}
+  </div>
+</div>
+
+    <div class="card-form">
+      <form class="p-4 p-md-5 rounded-3 bg-dark bg-gradient" id="RandomMovieForm" method="POST">
+          {{ form.hidden_tag() }}
+        <div class="form-floating mb-3">
+          {{ form.year(class="form-control", id="year") }}
+          <label for="year">Year</label>
+        </div>
+        <div class="form-floating mb-3">
+          {{ form.category(class="form-control", id="category") }}
+          <label for="category">Category</label>
+        </div>
+        {% if logged_in and user.id == current_user.id %}
+          {{ form.submit(class="w-100 btn btn-outline-warning card-button") }}
+        {% endif %}
+      </form>
+        <h3>Descriere</h3>
+        <h6>{{ movie.overview }}</h6>
     </div>
 
+  </div>
+</div>
+
 {% endblock %}
+
+<script>
+  const scrollContainer = document.querySelector('.scroll-container');
+  const btnLeft = document.getElementById('scroll-left');
+  const btnRight = document.getElementById('scroll-right');
+
+  btnLeft.addEventListener('click', () => {
+    scrollContainer.scrollBy({
+      left: -300,
+      behavior: 'smooth'
+    });
+  });
+
+  btnRight.addEventListener('click', () => {
+    scrollContainer.scrollBy({
+      left: 300,
+      behavior: 'smooth'
+    });
+  });
+</script>

@@ -1,83 +1,92 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import current_user, login_required
 from . import db
-from .models import PopularMovies, PopularSeries, User, RandomMovie, SaveMovie
+from .models import PopularMovies, PopularSeries, User, RandomMovie, SaveMovie, Actors
 from .forms import RandomMovieForm
-from .movies_requests import get_random_movie, update_popular_movies, update_popular_series
+from .movies_requests import get_random_movie, update_popular_movies, update_popular_series, actors_request
 
 views = Blueprint("views", __name__)
 
 @views.route('/')
 def home():
-    update_popular_series()
-    update_popular_movies()
-    movies_result = db.session.execute(db.select(PopularMovies).order_by(PopularMovies.popularity))
+    movies_result = db.session.execute(db.select(PopularMovies).order_by(PopularMovies.rating))
     top_movies = movies_result.scalars().all()[10:]
     for i in range(len(top_movies)):
         top_movies[i].ranking = len(top_movies) - i
     db.session.commit()
 
-    series_result = db.session.execute(db.select(PopularSeries).order_by(PopularSeries.popularity))
-    top_series = series_result.scalars().all()
-    for i in range(len(top_series)):
-        top_series[i].ranking = len(top_series) - i
-    db.session.commit()
+    return render_template('index.html',movies= top_movies, logged_in= current_user.is_authenticated)
 
-    return render_template('index.html',movies= top_movies ,series= top_series, logged_in= current_user.is_authenticated)
 
 @views.route('/profile/<int:user_id>', methods= ['GET', 'POST'])
+@login_required
 def show_profile(user_id):
     form = RandomMovieForm()
     requested_user = db.get_or_404(User, user_id)
-    saved_movies = db.session.execute(db.select(SaveMovie).where(SaveMovie.user_who_saved_movie == user_id)).scalars()
+    saved_movies = db.session.execute(db.select(SaveMovie).where(SaveMovie.user_who_saved_movie == user_id)).scalars().all()
     movie = db.session.execute(db.select(RandomMovie).where(RandomMovie.movie_owner == user_id)).scalar()
-    if form.validate_on_submit():
 
+    if form.validate_on_submit():
         year = form.year.data
         category = form.category.data
-        try:
-            year_u = int(year)
-        except ValueError:
-            year_u = None
-        update_movie = get_random_movie(year= year_u, genre= int(category))
+
+        update_movie = get_random_movie(year= year, genre= int(category))
         if update_movie:
-            movie = db.session.execute(db.select(RandomMovie).where(User.id == RandomMovie.movie_owner)).scalar()
+            movie = db.session.execute(db.select(RandomMovie).where(RandomMovie.movie_owner == user_id)).scalar()
+            movie.unique_id = update_movie['unique_id']
             movie.title = update_movie['title']
             movie.overview = update_movie['overview']
-            movie.release_date = update_movie['release_date']
-            movie.rating = update_movie['rating']
             movie.poster_url = update_movie['poster_url']
+            movie.rating = round(update_movie['rating'], 2)
+            movie.release_date = update_movie['release_date']
+            movie.trailer = update_movie['trailer']
+
             db.session.commit()
 
             return redirect(url_for('views.show_profile', user_id= current_user.id))
 
     return render_template('profile.html', logged_in= current_user.is_authenticated,
                                user= requested_user, form= form, movie=movie, saved_movies= saved_movies)
-@login_required
+
+@views.route("/details/<title>")
+def see_details(title):
+    movie = db.session.execute(db.select(SaveMovie).where(SaveMovie.title == title)).scalar()
+    actors = db.session.execute(db.select(Actors).where(Actors.movie_id == movie.unique_id)).scalars().all()
+    if not actors:
+        actors_request(movie.unique_id)
+        return redirect(url_for('views.see_details', title= title))
+
+
+    return render_template('details.html', movie= movie, logged_in= current_user.is_authenticated, actors= actors)
+
 @views.route('/add', methods= ['GET','POST'])
+@login_required
 def save_movie():
     movie = None
     save_from = request.args.get('save_from')
-    print(save_from)
     movie_id = request.args.get('id')
     if save_from == 'profile':
         movie = db.get_or_404(RandomMovie, movie_id)
-    elif save_from == 'home':
+    elif save_from == 'movies':
         movie = db.get_or_404(PopularMovies, movie_id)
 
-    my_movie = SaveMovie(title= movie.title,
-                         overview= movie.overview,
-                         relase_date= movie.relase_date,
-                         rating= movie.rating,
-                         poster_url= movie.poster_url,
-                         user_who_saved_movie= current_user.id)
+    my_movie = SaveMovie(unique_id = movie.unique_id,
+                        title= movie.title,
+                        overview= movie.overview,
+                        release_date= movie.release_date,
+                        rating= round(movie.rating, 2),
+                        poster_url= movie.poster_url,
+                        trailer= movie.trailer,
+                        user_who_saved_movie= current_user.id)
     db.session.add(my_movie)
     db.session.commit()
 
 
     return redirect(url_for('views.show_profile', user_id= current_user.id))
 
+
 @views.route('/delete', methods= ['GET', 'POST'])
+@login_required
 def delete():
     movie_id = request.args.get('id')
     movie_to_delete = db.get_or_404(SaveMovie, movie_id)

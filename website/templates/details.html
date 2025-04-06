@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container movie-container" style="max-width: 1150px">
+<div class="card-details">
+  <div class="rating-badge">
+    <i>{{ movie.rating }}</i>
+    <i class="fas fa-star"></i>
+  </div>
+  <img src="{{ movie.poster_url }}" alt="Poster Film">
+  <div class="release-date">
+    {{ movie.release_date }}
+  </div>
+</div>
+  {% if movie.trailer %}
+    <iframe class="trailer" src="{{ movie.trailer }}" allowfullscreen></iframe>
+  {% endif %}
+</div>
+<div class="container-sm" style="max-width: 1150px">
+  <div class="row text-start mb-2">
+    <h3>Descriere</h3>
+    <p>{{ movie.overview }}</p>
+  </div>
+  <div class="row text-center">
+    <h3 class="text-start">Actori</h3>
+    {% for actor in actors %}
+    <div class="col col-sm-4 col-md-3 col-lg-2 mt-3">
+      <div class="actor-container">
+        <img src="{{ actor.profile_picture }}" alt="Actor">
+        <div class="actor-name-overlay">{{ actor.actor_name }}</div>
+    </div>
+</div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
