@@ -17,16 +17,16 @@ def register():
         result = db.session.execute(db.select(User).where(User.email == email))
         user = result.scalar()
         if user:
-            flash("User already exists.")
+            flash("User already exists." ,'error')
             return redirect(url_for('auth.register'))
         elif form.password1.data != form.password2.data:
-            flash("Passwords must be the same.")
+            flash("Passwords must be the same." ,'error')
             return redirect(url_for('auth.register'))
         elif len(form.password1.data) < 8:
-            flash("Password must have minimum 8 characters.")
+            flash("Password must have minimum 8 characters." ,'error')
             return redirect(url_for('auth.register'))
         elif not special_char(form.password1.data):
-            flash("Password must have one special character.")
+            flash("Password must have one special character." ,'error')
             return redirect(url_for('auth.register'))
         #hasing and salting a password
         password = generate_password_hash(password= passw,
@@ -72,7 +72,7 @@ def login():
         else:
             flash("You were succesfully logged in")
             login_user(user)
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.show_profile', user_id= current_user.id))
 
 
     return render_template("login.html",form= form, error= error, logged_in= current_user.is_authenticated)

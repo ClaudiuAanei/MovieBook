@@ -1,16 +1,158 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <style>
+    .main-container {
+        max-width: 1100px;
+        margin: auto;
+        background: #3F4F6B; /* Culoare deschisă care se potrivește cu tema generală */
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+    }
+    .search-bar input {
+      border-radius: 30px;
+      padding: 10px 20px;
+    }
 
-{% if not logged_in: %}
-<div class="px-4 py-2 my-5 text-center">
-    <h1 class="display-5 fw-bold text-body-emphasis titles">Welcome to MovieBook</h1>
-    <div class="col-lg-6 mx-auto">
-<div class="d-flex justify-content-center">
-    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-m fixed-btn">Login</a>
-    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-m fixed-btn">Register</a>
-</div>
+    .search-bar button {
+      border-radius: 30px;
+      padding: 10px 20px;
+    }
+
+    .welcome-box {
+      background-color: #eef2f6;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .welcome-box h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #11A3F7;
+    }
+
+    .welcome-box p {
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+    }
+
+    .welcome-box .btn {
+      width: 120px;
+      margin: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 20px;
+      }
+
+      .welcome-box {
+        margin-top: 30px;
+      }
+    }
+  </style>
+<div class="container main-container">
+    <div class="row align-items-center">
+
+        <!-- Left: Search & Cards -->
+        <div class="col-lg-6 d-flex flex-column align-items-center gap-4">
+
+            <!-- Search Bar -->
+            <form action="{{ url_for('views.home') }}" method="post"
+                  class="d-flex search-bar w-100 justify-content-center"
+                  role="search"
+                  style="max-width: 400px;"
+                  >
+                <input class="form-control me-2 border border-info"
+                       type="search"
+                       placeholder="Search movies..."
+                       id="search"
+                       name="search"
+                       aria-label="Search">
+                <button class="btn btn-outline-info" style="color: #fff;" type="submit">Search</button>
+            </form>
+
+            <!-- Movie Cards (2 Cards) -->
+            {% if results %}
+            <div class="d-flex gap-4 mt-3"> <!-- Flex container pentru carduri -->
+                <!-- Card -->
+                {% for movie in results[:2] %}
+                <div class="card-mylist position-relative">
+                    <div class="rating-badge">
+                        <i>{{ movie.rating }}</i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <img src="{{ movie.poster_url }}" alt="Poster Film" />
+                    <a href="{{ url_for('views.see_details', title=movie.title, details_from='search') }}" class="btn btn-warning details-button">See details</a>
+                    <a href="{{ url_for('views.save_movie', id=movie.unique_id, save_from='search') }}" class="btn btn-secondary delete-button">Add to MyList</a>
+                    <div class="release-date">{{ movie.release_date }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Right: Welcome box -->
+        <div class="col-lg-6">
+            <div class="welcome-box border border-info mt-5">
+                <h2>Welcome to Movie Book</h2>
+                <p>Track your favorite movies, explore new ones, and build your personal watchlist.</p>
+                <div>
+                    {% if not logged_in %}
+                        <a href="/login" class="btn btn-primary">Login</a>
+                        <a href="/register" class="btn btn-outline-primary">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-{% endif %}
+
+
+<div class="container mt-2">
+    <h3 class="trending-title mt-4">Movies in Trending</h3>
+
+    <div class="scroll-container-wrapper d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary scroll-left" style="outline: none; box-shadow: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M9.224 1.553a.5.5 0 0 1 .223.67L6.56 8l2.888 5.776a.5.5 0 1 1-.894.448l-3-6a.5.5 0 0 1 0-.448l3-6a.5.5 0 0 1 .67-.223"></path>
+            </svg>
+        </button>
+
+        <div class="scroll-container d-flex overflow-auto">
+            {% for movie in movies %}
+                <div class="card-mylist position-relative mx-2">
+                    <div class="rating-badge">
+                        <i>{{ movie.rating }}</i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <img src="{{ movie.poster_url }}" alt="Poster Film" class="img-fluid movie-img">
+
+                    <!-- Butoane: Delete & See Details -->
+                    <a href="{{ url_for('views.see_details', title= movie.title, details_from= 'homeMovie') }}" class="btn btn-warning details-button">See details</a>
+                    <a href="{{ url_for('views.save_movie', id= movie.id, save_from= 'movies') }}" class="btn btn-secondary delete-button">Add to MyList</a>
+
+                    <div class="release-date mt-2">
+                        {{ movie.release_date }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary scroll-right" style="margin-right: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
 {% endblock %}

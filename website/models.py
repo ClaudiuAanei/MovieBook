@@ -20,7 +20,7 @@ class RandomMovie(db.Model):
     __tablename__ = 'random_movies'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     unique_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    title: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(100), nullable=False)
     overview: Mapped[str] = mapped_column(String(100), nullable=False)
     poster_url: Mapped[str] = mapped_column(String(300), nullable=False)
     rating: Mapped[float] = mapped_column(Float, nullable=False)

@@ -1,6 +1,5 @@
 import random
 import requests
-
 from website.models import PopularMovies, PopularSeries, Actors
 from website import db
 
@@ -87,6 +86,16 @@ def popular_series_request():
 
 #=======================================================================================================================
 
+class MoviesSearched:
+    def __init__(self, id_movie, titles, overview, release_date, rating, poster_path, trailer):
+        self.unique_id = id_movie
+        self.title = titles
+        self.overview = overview
+        self.release_date = release_date
+        self.rating = rating
+        self.poster_url = "https://image.tmdb.org/t/p/w500" + poster_path
+        self.trailer = trailer
+
 def get_random_movie(year= None, genre= None):
     url = "https://api.themoviedb.org/3/discover/movie"
 
@@ -119,17 +128,50 @@ def get_random_movie(year= None, genre= None):
     if movies:
         random_movie = random.choice(movies)
 
-        return {
-            "unique_id": random_movie["id"],
-            "title": random_movie["title"],
-            "overview": random_movie["overview"],
-            "poster_url": f"{MOVIE_DB_IMAGE_URL}{random_movie['poster_path']}",
-            "rating": random_movie["vote_average"],
-            "release_date": random_movie["release_date"],
-            "trailer": video_request(random_movie['id'])
-        }
+        return MoviesSearched(
+            random_movie['id'],
+            random_movie["title"],
+            random_movie['overview'],
+            random_movie["release_date"],
+            random_movie["vote_average"],
+            f"{MOVIE_DB_IMAGE_URL}{random_movie['poster_path']}",
+            video_request(random_movie['id'])
+        )
     else:
         return None
+
+def search_movie(movie):
+    url = "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
+    headers = {
+        "accept": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
+    }
+    params= {
+        'query': movie,
+    }
+
+    response = requests.get(url, headers= headers, params= params)
+    results = response.json()['results']
+
+    results = sorted(results, key= lambda film: film['popularity'], reverse= True)
+
+    movies = []
+
+    for movie in results[:2]:
+        movies.append(MoviesSearched(
+                       movie['id'],
+                       movie['title'],
+                       movie['overview'],
+                       movie['release_date'],
+                       movie['vote_average'],
+                       movie['poster_path'],
+                       video_request(movie['id'])
+                                     )
+                      )
+
+    return movies
+
+#=========================================================
 
 def video_request(movie_id):
     movie_id = f'{movie_id}'
@@ -170,6 +212,10 @@ def actors_request(movie_id):
                                profile_picture= "https://image.tmdb.org/t/p/w500" + str(person['profile_path']),
                                popularity= person['popularity'])
                 actors.append(actor)
-        session.bulk_save_objects(actors)
-        session.commit()
+        if actors:
+            session.bulk_save_objects(actors)
+            session.commit()
 
+
+if __name__ == '__main__':
+    pass
