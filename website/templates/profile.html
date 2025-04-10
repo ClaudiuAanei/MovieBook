@@ -54,7 +54,7 @@
     {% endwith %}
     </div>
   <div class="card-container">
-
+{% if movie.unique_id != 0000 %}
 <div class="card-profile position-relative">
   <div class="rating-badge">
     <i>{{ movie.rating }}</i>
@@ -70,6 +70,7 @@
     {{ movie.release_date }}
   </div>
 </div>
+{% endif %}
 
     <div class="card-form">
       <form class="p-4 p-md-5 rounded-3 bg-dark bg-gradient" id="RandomMovieForm" method="POST">

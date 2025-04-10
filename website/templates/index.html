@@ -58,6 +58,15 @@
     }
   </style>
 <div class="container main-container">
+    <div class="flash">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
     <div class="row align-items-center">
 
         <!-- Left: Search & Cards -->

@@ -2,15 +2,17 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy import Integer, String, ForeignKey, Float
+from sqlalchemy import Integer, String, ForeignKey, Float, Boolean
 
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    email: Mapped[str] = mapped_column(String(100), unique=True)
-    password: Mapped[str] = mapped_column(String(100))
-    name: Mapped[str] = mapped_column(String(1000))
+    email: Mapped[str] = mapped_column(String(100), unique=True, nullable= False)
+    password: Mapped[str] = mapped_column(String(100), nullable= False)
+    name: Mapped[str] = mapped_column(String(1000), nullable= False)
+    confirmation_code: Mapped[str] = mapped_column(String, nullable= False)
+    confirmation: Mapped[bool] = mapped_column(Boolean, nullable= False)
     date_created: Mapped[str] = mapped_column(db.DateTime(timezone= True), default= func.now())
 
     random_movie_rel: Mapped[list["RandomMovie"]] = relationship("RandomMovie", back_populates="user_rel")

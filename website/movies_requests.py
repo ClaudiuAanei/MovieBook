@@ -2,7 +2,16 @@ import random
 import requests
 from website.models import PopularMovies, PopularSeries, Actors
 from website import db
+import os
+from dotenv import find_dotenv, load_dotenv
 
+PATH = find_dotenv()
+load_dotenv(PATH)
+
+headers = {
+    "accept": "application/json",
+    "Authorization": os.getenv("API_MB_TOKEN"),
+}
 
 MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
 
@@ -33,10 +42,7 @@ def update_popular_movies():
 
 def popular_movies_request():
     url = "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1"
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40"
-    }
+
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         url_db_populars = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
@@ -71,11 +77,6 @@ def update_popular_series():
 def popular_series_request():
     url = "https://api.themoviedb.org/3/trending/tv/day?language=en-US"
 
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
-        "language": "en-US"
-    }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         popular_series = response.json()['results']
@@ -99,10 +100,6 @@ class MoviesSearched:
 def get_random_movie(year= None, genre= None):
     url = "https://api.themoviedb.org/3/discover/movie"
 
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
-    }
     params = {
         "page": 1,
         "with_original_language": "en",
@@ -142,10 +139,7 @@ def get_random_movie(year= None, genre= None):
 
 def search_movie(movie):
     url = "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
-    }
+
     params= {
         'query': movie,
     }
@@ -177,11 +171,6 @@ def video_request(movie_id):
     movie_id = f'{movie_id}'
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
 
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
-        "language": "en-US"
-    }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         popular_series = response.json()['results']
@@ -195,11 +184,6 @@ def actors_request(movie_id):
     movie_id = f'{movie_id}'
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
 
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTkwY2RhNDNhZDc4YmU0OTEwZWZjMGNjOTM1Yjg3MiIsIm5iZiI6MTc0MTI2OTA5Ni44MTIsInN1YiI6IjY3YzlhODY4M2RkN2RhMzk0ZjI0YmI5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr43qEjDxnWJslILnvQk6uDIqwo4p-KtXIo6PolgV40",
-        "language": "en-US"
-    }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         actors = []

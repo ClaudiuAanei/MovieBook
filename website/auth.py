@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, current_user
 from . import db
 from .models import User, RandomMovie
 from .forms import RegisterForm, LoginForm
+from .email_sender import Email, generate_unique_code
 
 auth = Blueprint("auth", __name__)
 
@@ -33,10 +34,11 @@ def register():
                                           method= "pbkdf2:sha256",
                                           salt_length= 8)
 
-
         new_user = User(email= email,
                         password= password,
-                        name= name)
+                        name= name,
+                        confirmation_code= generate_unique_code(),
+                        confirmation = False)
         db.session.add(new_user)
         db.session.commit()
 
@@ -51,6 +53,11 @@ def register():
                                 movie_owner= current_user.id)
         db.session.add(first_movie)
         db.session.commit()
+
+        mail = Email(name, email, new_user.id, new_user.confirmation_code)
+        mail.create_email()
+        mail.send_email(email)
+        flash('Cont creat cu succes. Verifica emailul, pentru confirmare.')
 
         return redirect(url_for('views.home', logged_in= current_user.is_authenticated))
     return render_template("register.html",form= form ,logged_in= current_user.is_authenticated)
@@ -82,6 +89,19 @@ def logout():
     logout_user()
     return render_template('logout.html')
 
+@auth.route('/confirm', methods= ['GET'])
+def confirmation_account():
+    code = request.args.get('code')
+    user_id = request.args.get('id')
+    print(code)
+    user = db.session.execute(db.select(User).where(User.id == int(user_id))).scalar()
+    if user:
+        if user.confirmation_code == code:
+            user.confirmation = True
+            db.session.commit()
+            flash("Cont confirmat cu succes.")
+
+    return redirect(url_for('views.home'))
 
 def special_char(password):
     special_chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '[', ']', '^', '_', ':', ';', '<', '=', '>', '?', '{', '|', '}']

@@ -1,19 +1,28 @@
 # Main for website
+from functools import wraps
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user, login_required
-
 # Functionality
 from . import db
-from .models import PopularMovies, User, RandomMovie, SaveMovie, Actors
+from .models import User, RandomMovie, SaveMovie, Actors
 from .forms import RandomMovieForm
 from .movies_requests import *
-
 # Exceptions
 import sqlite3
 from sqlalchemy.exc import IntegrityError
 
 views = Blueprint("views", __name__)
 search_result = []
+
+def confirmed_user_only(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        if current_user.confirmation != 1:
+            flash('Confirma mail-ul prima data.')
+            return redirect(url_for('views.home'))
+        else:
+            return func(*args, **kwargs)
+    return decorator
 
 @views.route('/', methods= ['GET', 'POST'])
 def home():
@@ -33,6 +42,7 @@ def home():
 
 @views.route('/profile/<int:user_id>', methods= ['GET', 'POST'])
 @login_required
+@confirmed_user_only
 def show_profile(user_id):
     form = RandomMovieForm()
     requested_user = db.get_or_404(User, user_id)
