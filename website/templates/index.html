@@ -164,4 +164,42 @@
     </div>
 </div>
 
+<div class="container mt-2">
+    <h3 class="trending-title mt-4">Series in Trending</h3>
+
+    <div class="scroll-container-wrapper d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary scroll-left" style="outline: none; box-shadow: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M9.224 1.553a.5.5 0 0 1 .223.67L6.56 8l2.888 5.776a.5.5 0 1 1-.894.448l-3-6a.5.5 0 0 1 0-.448l3-6a.5.5 0 0 1 .67-.223"></path>
+            </svg>
+        </button>
+
+        <div class="scroll-container d-flex overflow-auto">
+            {% for serie in series %}
+                <div class="card-mylist position-relative mx-2">
+                    <div class="rating-badge">
+                        <i>{{ serie.rating }}</i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <img src="{{ serie.poster_url }}" alt="Poster Film" class="img-fluid movie-img">
+
+                    <!-- Butoane: Delete & See Details -->
+                    <a href="{{ url_for('views.see_details', title= serie.title, details_from= 'homeSeries') }}" class="btn btn-warning details-button">See details</a>
+                    <a href="{{ url_for('views.save_movie', id= serie.id, save_from= 'series') }}" class="btn btn-secondary delete-button">Add to MyList</a>
+
+                    <div class="release-date mt-2">
+                        {{ serie.release_date }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary scroll-right" style="margin-right: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
 {% endblock %}

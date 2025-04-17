@@ -69,7 +69,7 @@ def update_popular_series():
                                     poster_url=MOVIE_DB_IMAGE_URL + serie['poster_path'],
                                     rating = serie['vote_average'],
                                     release_date=serie['first_air_date'].split('-')[0],
-                                    trailer= video_request(serie['id']))
+                                    trailer= video_request(serie['id'], True))
                 new_series.append(new_serie)
         session.bulk_save_objects(new_series)
         session.commit()
@@ -167,22 +167,28 @@ def search_movie(movie):
 
 #=========================================================
 
-def video_request(movie_id):
+def video_request(movie_id, serie= False):
     movie_id = f'{movie_id}'
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
+    if serie:
+        url = f"https://api.themoviedb.org/3/tv/{movie_id}/videos"
+    else:
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
 
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         popular_series = response.json()['results']
         for item in popular_series:
-            if item['name'] == "Official Trailer":
+            if "Official Trailer" in item['name'] or item['type'] == 'Trailer' and item['official'] == True:
                 return f"https://www.youtube.com/embed/{item['key']}"
     else:
         return None
 
-def actors_request(movie_id):
+def actors_request(movie_id, serie= False):
     movie_id = f'{movie_id}'
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
+    if serie:
+        url = f'https://api.themoviedb.org/3/tv/{movie_id}/credits'
+    else:
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
 
     response = requests.get(url, headers=headers)
     if response.status_code == 200:

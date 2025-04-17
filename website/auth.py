@@ -93,7 +93,6 @@ def logout():
 def confirmation_account():
     code = request.args.get('code')
     user_id = request.args.get('id')
-    print(code)
     user = db.session.execute(db.select(User).where(User.id == int(user_id))).scalar()
     if user:
         if user.confirmation_code == code:

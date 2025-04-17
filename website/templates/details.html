@@ -23,6 +23,7 @@
   </div>
   <div class="row text-center">
     <h3 class="text-start" style="color: #fff;">Actori</h3>
+    {% if actors %}
     {% for actor in actors %}
     <div class="col col-sm-4 col-md-3 col-lg-2 mt-3">
       <div class="actor-container">
@@ -31,6 +32,7 @@
     </div>
 </div>
     {% endfor %}
+    {% endif %}
   </div>
 </div>
 

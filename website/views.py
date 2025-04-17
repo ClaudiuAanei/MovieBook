@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from . import db
 from .models import User, RandomMovie, SaveMovie, Actors
 from .forms import RandomMovieForm
-from .movies_requests import *
+from .movies_requests import PopularMovies, PopularSeries, search_movie, get_random_movie, actors_request
 # Exceptions
 import sqlite3
 from sqlalchemy.exc import IntegrityError
@@ -24,6 +24,7 @@ def confirmed_user_only(func):
             return func(*args, **kwargs)
     return decorator
 
+
 @views.route('/', methods= ['GET', 'POST'])
 def home():
     global search_result
@@ -34,10 +35,15 @@ def home():
     for i in range(len(top_movies)):
         top_movies[i].ranking = len(top_movies) - i
 
+    series_result = db.session.execute(db.select(PopularSeries).order_by(PopularSeries.rating))
+    top_series = series_result.scalars().all()[::-1]
+    for i in range(len(top_series)):
+        top_series[i].ranking = len(top_series) - i
+
     if request.method == 'POST':
         movie = request.form.get('search')
         search_result = search_movie(movie)
-    return render_template('index.html',movies= top_movies, results= search_result ,logged_in= current_user.is_authenticated)
+    return render_template('index.html',movies= top_movies, series= top_series, results= search_result ,logged_in= current_user.is_authenticated)
 
 
 @views.route('/profile/<int:user_id>', methods= ['GET', 'POST'])
@@ -71,15 +77,19 @@ def show_profile(user_id):
     return render_template('profile.html', logged_in= current_user.is_authenticated,
                                user= requested_user, form= form, movie=movie, saved_movies= saved_movies)
 
+
+
 @views.route("/details/<title>", methods=['GET','POST'])
 def see_details(title):
     movie_from = request.args.get('details_from')
-    print(movie_from)
     if movie_from == 'randomMovie':
         movie = db.session.execute(db.select(RandomMovie).where(RandomMovie.title == title)).scalar()
         actors = db.session.execute(db.select(Actors).where(Actors.movie_id == movie.unique_id)).scalars().all()
     elif movie_from == 'homeMovie':
         movie = db.session.execute(db.select(PopularMovies).where(PopularMovies.title == title)).scalar()
+        actors = db.session.execute(db.select(Actors).where(Actors.movie_id == movie.unique_id)).scalars().all()
+    elif movie_from == 'homeSeries':
+        movie = db.session.execute(db.select(PopularSeries).where(PopularSeries.title == title)).scalar()
         actors = db.session.execute(db.select(Actors).where(Actors.movie_id == movie.unique_id)).scalars().all()
     elif movie_from == 'search':
         movie = next((tmovie for tmovie in search_result if tmovie.title == title), None)
@@ -88,11 +98,16 @@ def see_details(title):
         movie = db.session.execute(db.select(SaveMovie).where(SaveMovie.title == title)).scalar()
         actors = db.session.execute(db.select(Actors).where(Actors.movie_id == movie.unique_id)).scalars().all()
     if not actors:
-        actors_request(movie.unique_id)
-        return redirect(url_for('views.see_details', title= title, details_from= movie_from))
-
+        if movie_from != 'homeSeries':
+            actors_request(movie.unique_id)
+            return redirect(url_for('views.see_details', title= title, details_from= movie_from))
+        else:
+            actors_request(movie.unique_id, True)
+            return redirect(url_for('views.see_details', title=title, details_from=movie_from))
 
     return render_template('details.html', movie= movie, logged_in= current_user.is_authenticated, actors= actors)
+
+
 
 @views.route('/add', methods= ['GET','POST'])
 @login_required
@@ -104,6 +119,8 @@ def save_movie():
         movie = db.get_or_404(RandomMovie, movie_id)
     elif save_from == 'movies':
         movie = db.get_or_404(PopularMovies, movie_id)
+    elif save_from == 'series':
+        movie = db.get_or_404(PopularSeries, movie_id)
     elif save_from == 'search':
         movie = next((tmovie for tmovie in search_result if tmovie.unique_id == int(movie_id)), None)
     try:
@@ -136,3 +153,5 @@ def delete():
         db.session.delete(movie_to_delete)
         db.session.commit()
     return redirect(url_for('views.show_profile', user_id= current_user.id))
+
+
