@@ -1,13 +1,12 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash
+from sqlalchemy import and_, func
 from flask_login import logout_user
 from .movies_requests import update_popular_movies, update_popular_series
 from .models import User, RandomMovie, SaveMovie
 from . import db
 
 ADMIN_CREDENTIALS = {'admin': 'parola123'}
-users_per_page = 10
-users_on_pages = {}
-pagini = 1
+
 
 admin = Blueprint("admin", __name__)
 
@@ -16,38 +15,90 @@ admin = Blueprint("admin", __name__)
 def adminpage():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin.adminlogin'))
+
     logout_user()
-    page = request.args.get('page')
-    if page:
-        pages = get_pagination_pages(int(page), pagini)
-        users_on_page = pagination(int(page))
-        if request.method == "GET":
-            return render_template('admin_index.html', users= users_on_page, pages= pages, current_page = int(page))
-    else:
-        return render_template('admin_index.html', users= pagination(1), pages= get_pagination_pages(1, pagini), current_page = 1)
+    page = get_safe_page()
+
+    users_on_page, total_pages = paginate_users(int(page))
+    pages = get_pagination_pages(int(page), total_pages)
+
+    return render_template('admin_index.html',
+                           users= users_on_page,
+                           total_pages = total_pages,
+                           pages= pages,
+                           current_page = int(page))
+
+@admin.route('/admin/edit', methods= ['GET','POST'])
+def edit_user():
+    if request.method == 'POST':
+        user_id = request.args.get('user_id')
+        user_to_update = db.get_or_404(User, user_id)
+
+        name = request.form.get('name')
+        email = request.form.get('email')
+        option = request.form.get('confirm')
+
+        if name:
+            user_to_update.name = name
+        if email:
+            user_to_update.email = email
+
+        user_to_update.confirmation = bool(int(option))
+        db.session.commit()
+        flash('Update was successful.')
+        return redirect(url_for('admin.adminpage'))
+
+    user_id = request.args.get('user_id')
+    user = db.get_or_404(User, user_id)
+
+    return render_template('edit_user.html', user = user)
+
+@admin.route('/admin/clean-users')
+def clean_users():
+    from datetime import datetime
+    today = datetime.now().date()
+
+    unconfirmed_users = db.session.execute(
+        db.select(User.id).where(
+            and_(
+                User.confirmation.is_(False),
+                func.date(User.date_created) != today
+            )
+        )
+    ).scalars().all()
+
+    if not unconfirmed_users:
+        flash("No unconfirmed users found.")
+        return redirect(url_for('admin.adminpage'))
+
+    db.session.query(RandomMovie).filter(RandomMovie.movie_owner.in_(unconfirmed_users)).delete(
+        synchronize_session=False)
+    db.session.query(SaveMovie).filter(SaveMovie.user_who_saved_movie.in_(unconfirmed_users)).delete(
+        synchronize_session=False)
+
+    db.session.query(User).filter(User.id.in_(unconfirmed_users)).delete(synchronize_session=False)
+
+    db.session.commit()
+    flash(f"{len(unconfirmed_users)} unconfirmed user(s) successfully deleted.")
+    return redirect(url_for('admin.adminpage'))
 
 
 @admin.route('/admin/update', methods= ['GET'])
 def update():
     updates = request.args.get('update')
-    if request.method == 'GET':
-        if updates == 'movies':
-            update_popular_movies()
-            flash('Movies Trending Successful updated')
-        elif updates == 'series':
-            update_popular_series()
-            flash('Series Trending Successful updated')
-        return redirect(url_for('admin.adminpage'))
-    return render_template('admin_index.html')
+    if updates == 'movies':
+        update_popular_movies()
+        flash('Movies Trending Successful updated')
+    elif updates == 'series':
+        update_popular_series()
+        flash('Series Trending Successful updated')
+    return redirect(url_for('admin.adminpage'))
 
 
 @admin.route('/admin/remove_account', methods= ['GET','POST'])
 def remove_account():
-    if request.method == "POST":
-        email = request.form["email"]
-        remove_user(email)
-    else:
-        email = request.args.get("email")
+    email = request.form.get("email") or request.args.get("email")
+    if email:
         remove_user(email)
     return redirect(url_for('admin.adminpage'))
 
@@ -62,7 +113,7 @@ def remove_user(email):
 
         db.session.delete(user)
         db.session.commit()
-        flash(f'User: {user.name} With Id: {user.id} and email {user.email} is successful deleted.')
+        flash(f"User {user.name} (ID: {user.id}, email: {user.email}) was successfully deleted.")
     else:
         flash('User does not exists in database.')
 
@@ -86,28 +137,18 @@ def adminlogout():
     return redirect(url_for('admin.adminlogin'))
 
 
-
-def pagination(key): # trimite users in ruta principala si verifica conditiile acolo, asa vei inlatura global
+def paginate_users(page, per_page=10):
     users = db.session.execute(db.select(User).order_by(User.email)).scalars().all()
     if users:
-        global pagini
-        pagini = int(len(users) / users_per_page) + 1
-        index = 0
-        index2 = 0
-        for i in range(1, pagini + 1):
-            index2 += users_per_page
-            lista_items = []
-            for j in range(index, index2):
-                try:
-                    lista_items.append(users[j])
-                except IndexError:
-                    break
-            users_on_pages[i] = lista_items
-            index += users_per_page
+        total_pages = (len(users) - 1) // per_page + 1
 
-        return users_on_pages[key]
-    else:
-        return {}
+        if page < 1 or page > total_pages:
+            page = 1
+
+        start = (page - 1) * per_page
+        end = start + per_page
+        return users[start:end], total_pages
+
 
 def get_pagination_pages(current_page, total_pages, delta=1):
     pages = []
@@ -117,3 +158,10 @@ def get_pagination_pages(current_page, total_pages, delta=1):
         elif pages[-1] != '...':
             pages.append('...')
     return pages
+
+
+def get_safe_page():
+    try:
+        return int(request.args.get('page', 1))
+    except (ValueError, TypeError):
+        return 1

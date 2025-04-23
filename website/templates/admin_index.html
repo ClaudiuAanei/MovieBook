@@ -102,8 +102,8 @@
               </button>
             </form>
 
-            <a href="#" class="btn btn-secondary btn-custom">
-              <i class="bi bi-gear me-2"></i>Comandă 3
+            <a href="{{ url_for('admin.clean_users') }}" class="btn btn-secondary btn-custom">
+              <i class="bi bi-gear me-2"></i>Remove unconfirmed users
             </a>
 
             {% with messages = get_flashed_messages() %}
@@ -137,7 +137,10 @@
                           <p class="mb-0"><strong>Confirmare:</strong> {{ user.confirmation }}</p>
                         </div>
                       </div>
-                      <a href="{{ url_for('admin.remove_account', email=user.email) }}" class="btn btn-danger btn-custom ms-3">Delete</a>
+                      <div class="d-flex">
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-warning btn-custom me-2">Edit</a>
+                        <a href="{{ url_for('admin.remove_account', email=user.email) }}" class="btn btn-danger btn-custom">Delete</a>
+                      </div>
                     </div>
                   </li>
                 {% endfor %}

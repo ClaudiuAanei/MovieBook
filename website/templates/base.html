@@ -88,17 +88,36 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script>
-    document.querySelector('.scroll-left').addEventListener('click', function() {
-      const scrollContainer = document.querySelector('.scroll-container');
-      scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Pentru secțiunea "Movies in Trending"
+    const moviesScrollContainer = document.querySelector('#movies-scroll .scroll-container');
+    const moviesScrollLeft = document.querySelector('#movies-scroll .scroll-left');
+    const moviesScrollRight = document.querySelector('#movies-scroll .scroll-right');
+
+    moviesScrollLeft.addEventListener('click', () => {
+      moviesScrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
     });
 
-    document.querySelector('.scroll-right').addEventListener('click', function() {
-      const scrollContainer = document.querySelector('.scroll-container');
-      scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+    moviesScrollRight.addEventListener('click', () => {
+      moviesScrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
     });
-  </script>
+
+    // Pentru secțiunea "Series in Trending"
+    const seriesScrollContainer = document.querySelector('#series-scroll .scroll-container');
+    const seriesScrollLeft = document.querySelector('#series-scroll .scroll-left');
+    const seriesScrollRight = document.querySelector('#series-scroll .scroll-right');
+
+    seriesScrollLeft.addEventListener('click', () => {
+      seriesScrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+    });
+
+    seriesScrollRight.addEventListener('click', () => {
+      seriesScrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+  });
+</script>
+
   </body>
 </html>
 

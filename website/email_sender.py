@@ -1,10 +1,10 @@
+import os
 import smtplib
-# Format Html
+from random import choice, shuffle, randint
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText #
-from random import choice, shuffle, randint
-import os
 from dotenv import find_dotenv, load_dotenv
+
 PATH = find_dotenv()
 load_dotenv(PATH)
 
@@ -12,7 +12,7 @@ MY_EMAIL = os.getenv("MY_EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 
 letters = list(chr(i) for i in range(ord('A'), ord('Z') + 1)) + list(chr(i) for i in range(ord('a'), ord('z') + 1))
-numbers = list(str(i) for i in range(1, 10))
+numbers = list(str(i) for i in range(0, 10))
 
 def generate_characters(char, num):
     return [choice(char) for _ in range(num)] if num > 0 else []
@@ -35,7 +35,7 @@ class Email:
         with open("website/templates/confirmare.html", mode= 'r', encoding= "UTF-8") as file:
             text = file.read()
             new_mail = text.replace("[Nume solicitant]", self.name).replace(
-                "[URL MOVIEBOOK]", f"http://127.0.0.1:5000/confirm?code={self.confirmation_code}&id={self.user_id}")
+                "[URL MOVIEBOOK]", f"{os.getenv('URL_CONFIRMARE')}{self.confirmation_code}&id={self.user_id}")
             return new_mail
 
     def send_email(self, mail_address):

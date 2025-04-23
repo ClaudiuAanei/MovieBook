@@ -5,6 +5,8 @@ from . import db
 from .models import User, RandomMovie
 from .forms import RegisterForm, LoginForm
 from .email_sender import Email, generate_unique_code
+from .helpers import special_char
+from .movies_requests import get_random_movie
 
 auth = Blueprint("auth", __name__)
 
@@ -43,24 +45,24 @@ def register():
         db.session.commit()
 
         login_user(new_user)
-        first_movie = RandomMovie(unique_id= 000000,
-                                title= "Let us give you a movie",
-                                overview= "We are glad to help you watch a movie today.",
-                                poster_url= "",
-                                rating = 10,
-                                trailer= "",
-                                release_date="0000",
+        movie = get_random_movie(year= 2025)
+        first_movie = RandomMovie(unique_id= movie.unique_id,
+                                title= movie.title,
+                                overview= movie.overview,
+                                poster_url= movie.poster_url,
+                                rating = movie.rating,
+                                trailer= movie.trailer,
+                                release_date= movie.release_date,
                                 movie_owner= current_user.id)
         db.session.add(first_movie)
         db.session.commit()
 
         mail = Email(name, email, new_user.id, new_user.confirmation_code)
-        mail.create_email()
         mail.send_email(email)
         flash('Cont creat cu succes. Verifica emailul, pentru confirmare.')
 
-        return redirect(url_for('views.home', logged_in= current_user.is_authenticated))
-    return render_template("register.html",form= form ,logged_in= current_user.is_authenticated)
+        return redirect(url_for('views.home', logged_in = current_user.is_authenticated))
+    return render_template("register.html",form = form ,logged_in = current_user.is_authenticated)
 
 @auth.route('/login', methods= ["GET", "POST"])
 def login():
@@ -94,17 +96,12 @@ def confirmation_account():
     code = request.args.get('code')
     user_id = request.args.get('id')
     user = db.session.execute(db.select(User).where(User.id == int(user_id))).scalar()
-    if user:
-        if user.confirmation_code == code:
-            user.confirmation = True
-            db.session.commit()
-            flash("Cont confirmat cu succes.")
+
+    if user and user.confirmation_code == code:
+        user.confirmation = True
+        db.session.commit()
+        flash("Cont confirmat cu succes.")
+    else:
+        flash("Link invalid sau cont deja confirmat.")
 
     return redirect(url_for('views.home'))
-
-def special_char(password):
-    special_chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '[', ']', '^', '_', ':', ';', '<', '=', '>', '?', '{', '|', '}']
-    for letter in password:
-        if letter in special_chars:
-            return True
-    return False

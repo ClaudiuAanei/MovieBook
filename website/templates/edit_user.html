@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editare Utilizator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.25);
+      --main-color: #0d6efd;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border-radius: 1.5rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 550px;
+    }
+
+    h2 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-custom {
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Overlay modal style */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .choice-box {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .choice-box h4 {
+      margin-bottom: 1.5rem;
+    }
+    .confirm-true {
+      color: green;
+    }
+
+    .confirm-false {
+      color: red;
+    }
+
+    @media (max-width: 768px) {
+      .glass-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <h2 class="text-center"><i class="bi bi-pencil-square me-2"></i>Editare Utilizator</h2>
+    <form action="{{ url_for('admin.edit_user', user_id=user.id) }}" method="post">
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Current Name: <strong>{{ user.name }}</strong></label>
+        <input type="text" id="name" name="name" class="form-control" placeholder="Introdu noul username al utilizatorului">
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Current Email: <strong>{{ user.email }}</strong></label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Introdu noul email al utilizatorului">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirmat:</label>
+        <div class="d-flex align-items-center justify-content-between">
+          <span id="confirm-display" class="{% if user.confirmation == 1 %}confirm-true{% else %}confirm-false{% endif %}">
+            <strong>{% if user.confirmation == 1 %}True{% else %}False{% endif %}</strong>
+          </span>
+          <button type="button" class="btn btn-outline-primary btn-sm ms-3" onclick="openOverlay()">Alege</button>
+        </div>
+        <input type="hidden" id="confirm" name="confirm" value="{{ user.confirmation }}">
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-custom">
+          <i class="bi bi-save me-2"></i>Salvează
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Overlay Modal -->
+  <div class="overlay" id="confirmOverlay">
+    <div class="choice-box">
+      <h4>Selectează Confirmarea</h4>
+      <div class="d-grid gap-2">
+        <button class="btn btn-outline-success btn-custom" onclick="setConfirmation(true)">True</button>
+        <button class="btn btn-outline-danger btn-custom" onclick="setConfirmation(false)">False</button>
+        <button class="btn btn-secondary mt-2" onclick="closeOverlay()">Anulează</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openOverlay() {
+      document.getElementById('confirmOverlay').style.display = 'flex';
+    }
+
+    function closeOverlay() {
+      document.getElementById('confirmOverlay').style.display = 'none';
+    }
+
+    function setConfirmation(value) {
+      // Setează valoarea hidden inputului
+      document.getElementById('confirm').value = value ? '1' : '0';
+
+      // Găsește elementul de text și adaugă clasele corecte
+      var confirmDisplay = document.getElementById('confirm-display');
+      if (value) {
+        confirmDisplay.innerText = 'True';
+        confirmDisplay.classList.remove('confirm-false');
+        confirmDisplay.classList.add('confirm-true');
+      } else {
+        confirmDisplay.innerText = 'False';
+        confirmDisplay.classList.remove('confirm-true');
+        confirmDisplay.classList.add('confirm-false');
+      }
+
+      // Închide overlay-ul
+      closeOverlay();
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

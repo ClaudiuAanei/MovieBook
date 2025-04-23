@@ -46,8 +46,8 @@ def popular_movies_request():
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         url_db_populars = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
-        re = requests.get(url_db_populars, headers=headers).json()['results']
-        popular_movies = sorted(re, key=lambda popular: popular["vote_count"], reverse=True)
+        popular_results = requests.get(url_db_populars, headers=headers).json()['results']
+        popular_movies = sorted(popular_results, key=lambda popular: popular["vote_count"], reverse=True)
         return popular_movies
     else:
         return []

@@ -3,7 +3,7 @@
 
 
 <!-- CONTEXT: Container scrollabil -->
-<div class="scroll-container-wrapper">
+<div id="movies-scroll" class="scroll-container-wrapper">
     {% if saved_movies %}
     <button type="button" class="btn btn-outline-secondary scroll-left" style="outline: none; box-shadow: none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chevron-compact-left" viewBox="0 0 16 16">
@@ -22,7 +22,7 @@
           <img src="{{ movie.poster_url }}" alt="Poster Film">
 
           <!-- Butoane: Delete & See Details -->
-          <a href="{{ url_for('views.see_details', title= movie.title) }}" class="btn btn-warning details-button">See details</a>
+          <a href="{{ url_for('views.see_details', title= movie.title, details_from= 'saved') }}" class="btn btn-warning details-button">See details</a>
           <a href="{{ url_for('views.delete', id= movie.id) }}" class="btn btn-danger delete-button">Delete</a>
 
           <div class="release-date">
