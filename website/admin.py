@@ -106,10 +106,9 @@ def remove_account():
 def remove_user(email):
     user = db.session.execute(db.select(User).where(User.email == email)).scalar()
     if user:
-        # Stergerea activitatilor uitlizatorului
+
         db.session.query(RandomMovie).filter_by(movie_owner=user.id).delete()
         db.session.query(SaveMovie).filter_by(user_who_saved_movie=user.id).delete()
-        # Stergerea utilizatorului
 
         db.session.delete(user)
         db.session.commit()
@@ -148,6 +147,8 @@ def paginate_users(page, per_page=10):
         start = (page - 1) * per_page
         end = start + per_page
         return users[start:end], total_pages
+    else:
+        return [], 1
 
 
 def get_pagination_pages(current_page, total_pages, delta=1):
