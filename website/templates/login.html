@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}{% from "bootstrap/form.html" import render_form %}
 {% block content %}
       <style>
       .login-container-center{
@@ -61,7 +61,7 @@
     <div class="login-container">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
-          <div class=flashes>
+          <div>
           {% for message in messages %}
             <p style="text-align: center;">{{ message }}</p>
           {% endfor %}

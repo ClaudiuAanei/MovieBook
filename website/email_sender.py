@@ -4,7 +4,6 @@ from random import choice, shuffle, randint
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText #
 from dotenv import find_dotenv, load_dotenv
-
 PATH = find_dotenv()
 load_dotenv(PATH)
 
@@ -43,8 +42,10 @@ class Email:
         with smtplib.SMTP("smtp.gmail.com", 587) as connection:
             connection.starttls()
             connection.login(user= MY_EMAIL, password= PASSWORD)
+
             msg = MIMEMultipart('alternative') # pentru format html
             html = MIMEText(mail, 'html') # pentru format html
             msg.attach(html) # pentru format html
+
             connection.sendmail(MY_EMAIL, mail_address, msg.as_string()) #msg.as_string()
 

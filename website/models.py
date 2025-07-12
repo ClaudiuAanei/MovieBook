@@ -18,6 +18,14 @@ class User(db.Model, UserMixin):
     random_movie_rel: Mapped[list["RandomMovie"]] = relationship("RandomMovie", back_populates="user_rel")
     saved_movie_rel : Mapped[list["SaveMovie"]] = relationship("SaveMovie", back_populates="user_rel")
 
+    def __init__(self, email, password, name, confirmation_code, confirmation):
+        self.email = email
+        self.password = password
+        self.name = name
+        self.confirmation_code = confirmation_code
+        self.confirmation = confirmation
+
+
 class RandomMovie(db.Model):
     __tablename__ = 'random_movies'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -53,7 +61,7 @@ class PopularMovies(db.Model):
     __tablename__ = 'popularmovies'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     unique_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    title: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(100), nullable=False)
     overview: Mapped[str] = mapped_column(String(500), nullable=False)
     poster_url: Mapped[str] = mapped_column(String(300), nullable=False)
     rating: Mapped[float] = mapped_column(Float, nullable=False)

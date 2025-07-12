@@ -37,6 +37,8 @@ def edit_user():
         name = request.form.get('name')
         email = request.form.get('email')
         option = request.form.get('confirm')
+        if option in ['True', 'False']:
+            option = 1 if option == 'True' else 0
 
         if name:
             user_to_update.name = name

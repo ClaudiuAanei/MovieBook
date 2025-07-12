@@ -109,7 +109,7 @@ def get_random_movie(year= None, genre= None):
         try:
             params['primary_release_year'] = int(year)
         except ValueError:
-            params['primary_release_year'] = 2025
+            params['primary_release_year'] = random.randint(2000, 2025)
 
     if genre:
         params['with_genres'] = genre

@@ -77,14 +77,14 @@
       <form action="{{ url_for('auth.register') }}" method="post">
         {{ form.hidden_tag() }}
         <div class="mb-4">
-          <label for="username" class="form-label">User Name</label>
+          <label for="username" id="username" class="form-label">User Name</label>
           <div class="input-wrapper">
             <i class="bi bi-envelope-fill input-icon"></i>
             {{ form.name(class="form-control", placeholder= username) }}
           </div>
         </div>
         <div class="mb-4">
-          <label for="email" class="form-label">Email</label>
+          <label for="email" id="email" class="form-label">Email</label>
           <div class="input-wrapper">
             <i class="bi bi-envelope-fill input-icon"></i>
             {{ form.email(class="form-control", placeholder= email) }}
@@ -92,7 +92,7 @@
         </div>
 
         <div class="mb-4">
-          <label for="password1" class="form-label">Parola</label>
+          <label for="password1" id="password1" class="form-label">Parola</label>
           <div class="input-wrapper">
             <i class="bi bi-lock-fill input-icon"></i>
             {{ form.password1(class="form-control" , placeholder= password) }}
@@ -100,7 +100,7 @@
         </div>
 
         <div class="mb-4">
-          <label for="password2" class="form-label">Verifica Parola</label>
+          <label for="password2" id="password2" class="form-label">Verifica Parola</label>
           <div class="input-wrapper">
             <i class="bi bi-lock-fill input-icon"></i>
             {{ form.password2(class="form-control" , placeholder= password) }}
